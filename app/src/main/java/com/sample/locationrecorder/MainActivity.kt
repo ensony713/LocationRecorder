@@ -2,11 +2,12 @@ package com.sample.locationrecorder
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
     )
+    private val contentResolver = applicationContext.contentResolver
+    val takeFlag: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION and Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
     private val dirSelector = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
@@ -47,15 +50,29 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        if (!doGetPermissions()) {
-            requestPermissions(permissions, REQUEST_CODE)
+        if (!doGetPermissions() || selectedDir != null) {
+            showBeforeDialog(this)
         }
-
-        if (selectedDir == null) {
-            openDirectory()
+        else {
+            launchMainActivity()
         }
+    }
 
-        launchMainActivity()
+    private fun showBeforeDialog(context: Context) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("알림")
+            .setMessage("위치에 대한 권한을 허용하고, 위치 정보를 저장할 폴더를 선택해 주세요.")
+            .setPositiveButton("확인") { dialog, _ ->
+                dialog.dismiss()
+                if (!doGetPermissions()) {
+                    requestPermissions(permissions, REQUEST_CODE)
+                }
+
+                if (selectedDir == null) {
+                    openDirectory()
+                }
+            }
+            .show()
     }
 
     private fun launchMainActivity() {

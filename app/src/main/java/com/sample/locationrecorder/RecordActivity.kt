@@ -1,18 +1,12 @@
 package com.sample.locationrecorder
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.provider.DocumentsContract
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
@@ -29,6 +23,8 @@ class RecordActivity : AppCompatActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
 
+    private var path: Uri? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "main activity onCreate is called")
@@ -41,6 +37,10 @@ class RecordActivity : AppCompatActivity() {
             insets
         }
 
+        if (intent.hasExtra("dir")) {
+            path = intent.getParcelableExtra("dir")
+            Log.d(TAG, "get $path")
+        }
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
