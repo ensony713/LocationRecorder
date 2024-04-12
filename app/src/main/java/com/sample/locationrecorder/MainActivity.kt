@@ -15,8 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var pathPreferenceRepository: PathRepository
 
     private val TAG = "LaunchingActivity"
     private val REQUEST_CODE = 101
@@ -49,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        pathPreferenceRepository = PathRepository(dataStore)
 
         if (!doGetPermissions() || selectedDir != null) {
             showBeforeDialog(this)
